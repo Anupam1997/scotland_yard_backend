@@ -76,37 +76,6 @@ router.post("/join-game/:gameId", async (req, res) => {
   }
 });
 
-// Start the game (only the host can start it)
-router.post("/start/:gameId", async (req, res) => {
-  const { gameId } = req.params;
-  const { playerName } = req.body; // Assume the client sends the host's name for verification
-
-  try {
-    const game = await Game.findOne({ gameId });
-
-    if (!game) {
-      return res.status(404).json({ message: "Game not found" });
-    }
-
-    // Only allow the host to start the game
-    if (game.host !== playerName) {
-      return res.status(403).json({ message: "Only the host can start the game" });
-    }
-
-    // Check if the game is already in-progress or completed
-    if (game.status !== "waiting") {
-      return res.status(400).json({ message: "Game has already started or is completed" });
-    }
-
-    // Update game status to in-progress
-    game.status = "in-progress";
-    await game.save();
-    nextTurn(game); // Proceed to the next turn
-    res.json({ message: "Game started", gameId });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to start game", error });
-  }
-});
 
 // Assign a role to a player
 router.post("/assign-role/:gameId", async (req, res) => {
@@ -209,6 +178,39 @@ router.post("/assign-initial-position/:gameId", async (req, res) => {
     res.status(500).json({ message: "Failed to assign initial position", error });
   }
 });
+
+// Start the game (only the host can start it)
+router.post("/start/:gameId", async (req, res) => {
+  const { gameId } = req.params;
+  const { playerName } = req.body; // Assume the client sends the host's name for verification
+
+  try {
+    const game = await Game.findOne({ gameId });
+
+    if (!game) {
+      return res.status(404).json({ message: "Game not found" });
+    }
+
+    // Only allow the host to start the game
+    if (game.host !== playerName) {
+      return res.status(403).json({ message: "Only the host can start the game" });
+    }
+
+    // Check if the game is already in-progress or completed
+    if (game.status !== "waiting") {
+      return res.status(400).json({ message: "Game has already started or is completed" });
+    }
+
+    // Update game status to in-progress
+    game.status = "in-progress";
+    await game.save();
+    nextTurn(game); // Proceed to the next turn
+    res.json({ message: "Game started", gameId });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to start game", error });
+  }
+});
+
 
 
 
