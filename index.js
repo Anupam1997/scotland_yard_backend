@@ -15,10 +15,7 @@ const server = http.createServer(app); // Create HTTP server
 // Set up Socket.IO
 setupSocketIO(server);
 const io = getIoInstance();
-mongoose.connect('mongodb://localhost:27017/scotland_yard', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose.connect('mongodb://127.0.0.1:27017/scotland_yard')
 .then(() => console.log('MongoDB connected'))
 .catch((err) => console.log(err));
 

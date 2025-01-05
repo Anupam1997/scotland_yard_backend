@@ -7,7 +7,7 @@ const Game = require("../models/Game");
 const { v4: uuidv4 } = require("uuid");
 
 let currentPlayerIndex = 0;
-const io = getIoInstance();
+
 // Function to emit turn notifications
 function notifyTurn(player) {
   io.emit("turnNotification", { playerName: player.name });
@@ -121,6 +121,7 @@ router.post("/join-game/:gameId", async (req, res) => {
 
     // Emit the updated player count, names, and available roles to all clients
     const playerNames = game.players.map((player) => player.name);
+    const io = getIoInstance();
     io.emit("playerUpdate", { 
       playerCount: game.players.length, 
       playerNames,
@@ -139,6 +140,22 @@ router.post("/join-game/:gameId", async (req, res) => {
     res.status(500).json({ message: "Failed to join game", error });
   }
 });
+
+router.get("/details/:gameId", async (req,res) => {
+  try {
+    const {gameId} = req.params;
+    const game = await Game.findOne({gameId});
+
+    if (!game) {
+      return res.status(404).json({ message: 'Game not found' });
+    }
+
+    res.status(200).json(game);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+})
 
 
 // leave game

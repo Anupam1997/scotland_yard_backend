@@ -7,7 +7,7 @@ let io;
 const setupSocketIO = (server) => {
   io = socketIo(server,{
     cors: {
-        origin: 'http://192.168.39.208:8081',  // Allow only this origin to connect
+        origin: 'http://192.168.57.208:8081',  // Allow only this origin to connect
         credentials: true,  // Allow credentials (cookies, headers, etc.)
       }
   }); // Bind Socket.IO to the server
